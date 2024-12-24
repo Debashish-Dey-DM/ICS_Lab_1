@@ -1,0 +1,27 @@
+from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
+import base64
+
+# Generate a random key
+key = get_random_bytes(16)  # AES-128
+
+# Create a cipher object
+cipher = AES.new(key, AES.MODE_EAX)
+
+# Encrypt some data
+data = b"Secret Message"
+nonce = cipher.nonce
+ciphertext, tag = cipher.encrypt_and_digest(data)
+
+# Encode the ciphertext and nonce for storage or transmission
+encoded_ciphertext = base64.b64encode(ciphertext).decode('utf-8')
+encoded_nonce = base64.b64encode(nonce).decode('utf-8')
+
+print(f"Ciphertext: {encoded_ciphertext}")
+print(f"Nonce: {encoded_nonce}")
+
+# To decrypt the data
+cipher = AES.new(key, AES.MODE_EAX, nonce=base64.b64decode(encoded_nonce))
+plaintext = cipher.decrypt(base64.b64decode(encoded_ciphertext))
+
+print(f"Plaintext: {plaintext.decode('utf-8')}")
